@@ -5,13 +5,13 @@ Module.register("MMM-NCAAFootball",{
 		url: "",
 		initialLoadDelay: 2500, // 2.5 seconds delay. This delay is used to keep the wunderground API happy.
 		retryDelay: 2500,
-    		animationSpeed: 1000,
+    animationSpeed: 1000,
 		updateInterval: 30 * 1000
 	},
 
    getStyles: function () {
         return ["MMM-NCAAFootball.css"];
-    },  
+    },
 
   start: function() {
     Log.info("Starting module: " + this.name);
@@ -65,7 +65,7 @@ Module.register("MMM-NCAAFootball",{
     }
 
 	this.loaded = 1;
-	this.updateDom(this.config.animationSpeed);	
+	this.updateDom(this.config.animationSpeed);
 
   },
 
@@ -80,7 +80,7 @@ scheduleUpdate: function(delay) {
 		setTimeout(function() {
 			self.getScores();
 		}, nextLoad);
-	},  
+	},
 
 
 getDom: function () {
@@ -110,22 +110,19 @@ getDom: function () {
 	var team1 = document.createElement("td");
 	team1.innerHTML = this.team1;
 
+  var score1 = document.createElement("td");
+	var score2 = document.createElement("td");
 	if (this.score1 > this.score2) {
-        	var score1 = document.createElement("th");
-	} else {
-		var score1 = document.createElement("td");
+  	score1.className = "bold bright";
+	}
+	if (this.score2 > this.score1 ){
+		score2.className = "bold bright";
 	}
 	score1.innerHTML = this.score1;
+	score2.innerHTML = this.score2;
 
 	var scoreBreak = document.createElement("td");
 	scoreBreak.innerHTML = " : ";
-
-	if (this.score2 > this.score1) {
-                var score2 = document.createElement("th");
-        } else {
-                var score2 = document.createElement("td");
-        }
-        score2.innerHTML = this.score2;
 
 	var team2 = document.createElement("td");
         team2.innerHTML = this.team2;
@@ -140,7 +137,7 @@ getDom: function () {
         teamBreak2.innerHTML = "&nbsp;";
 
 	row.appendChild(team1);
-	row.appendChild(teamBreak);	
+	row.appendChild(teamBreak);
 	row.appendChild(score1);
 	row.appendChild(scoreBreak);
 	row.appendChild(score2);
