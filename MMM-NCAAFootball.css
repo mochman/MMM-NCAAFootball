@@ -1,0 +1,12 @@
+.MMM-NCAAFootball .table {
+    border-collapse: separate;
+    text-align: center;
+}
+
+.MMM-NCAAFootball .row {
+    vertical-align: middle;
+}
+
+.MMM-NCAAFootball .ranking {
+    font-size: 90%;
+}

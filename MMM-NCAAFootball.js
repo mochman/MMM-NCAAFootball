@@ -1,12 +1,17 @@
 Module.register("MMM-NCAAFootball",{
 
 	// Default module config.
-	defaults: {
+  defaults: {
 		url: "",
 		initialLoadDelay: 2500, // 2.5 seconds delay. This delay is used to keep the wunderground API happy.
 		retryDelay: 2500,
-    animationSpeed: 1000
+    		animationSpeed: 1000,
+		updateInterval: 30 * 1000
 	},
+
+   getStyles: function () {
+        return ["MMM-NCAAFootball.css"];
+    },  
 
   start: function() {
     Log.info("Starting module: " + this.name);
@@ -19,12 +24,11 @@ Module.register("MMM-NCAAFootball",{
     this.team1 = null;
     this.team2 = null;
     this.time = null;
-
-  }
+    this.loaded = 0;
+    this.scheduleUpdate(this.config.initialLoadDelay);
+  },
 
   getScores: function() {
-  		// Uses URL scheme of "http://yourserver.com/gpsUSERNAME/here.php".  Modify as needed for your server.
-  		// Allows for multiple folders for different people.  I'm using that function when I switch between mirror users.
   		var url = this.config.url;
   		var self = this;
 
@@ -32,9 +36,9 @@ Module.register("MMM-NCAAFootball",{
 
   		scoreRequest.open("GET", url, true);
 
-  		locationRequest.onreadystatechange = function() {
-  			if (locationRequest.readyState === 4) {
-  				if (locationRequest.status === 200) {
+  		scoreRequest.onreadystatechange = function() {
+  			if (scoreRequest.readyState === 4) {
+  				if (scoreRequest.status === 200) {
   					self.processScores(JSON.parse(scoreRequest.response));
   				} else if (scoreRequest.status === 0 ) {
   					Log.error(self.name + ": Could not get valid JSON data");
@@ -51,8 +55,8 @@ Module.register("MMM-NCAAFootball",{
   processScores: function(data) {
     this.title = data.title;
     if (this.title == "game") {
-      this.ranking1 = data.ranking1 == "NR" ? "" : data.ranking1;
-      this.ranking2 = data.ranking2 == "NR" ? "" : data.ranking2;
+      this.ranking1 = data.ranking1;
+      this.ranking2 = data.ranking2;
       this.score1 = data.score1;
       this.score2 = data.score2;
       this.team1 = data.team1;
@@ -60,34 +64,104 @@ Module.register("MMM-NCAAFootball",{
       this.time = data.time;
     }
 
+	this.loaded = 1;
+	this.updateDom(this.config.animationSpeed);	
+
   },
 
-  getDom: function () {
+scheduleUpdate: function(delay) {
+		var nextLoad = this.config.updateInterval;
+		//if a valid delay > 0 was passed into the function use that for the delay
+		if (typeof delay !== "undefined" && delay >= 0) {
+			nextLoad = delay;
+		}
+
+		var self = this;
+		setTimeout(function() {
+			self.getScores();
+		}, nextLoad);
+	},  
+
+
+getDom: function () {
 
         var wrapper = document.createElement("div");
-        //var header = document.createElement("header");
-        //header.innerHTML = "NCAA " + this.modes[this.details.t] + " " + this.details.y;
-        //wrapper.appendChild(header);
 
-        if (!this.scores) {
-            var text = document.createElement("div");
-            text.innerHTML = this.translate("LOADING");
-            text.classList.add("dimmed", "light");
-            wrapper.appendChild(text);
+	if (!this.loaded) {
+		wrapper.innerHTML = "Loading Scores...";
+		wrapper.className = "dimmed light small";
+		return wrapper;
+	}
+
+        var table = document.createElement("table");
+        table.classList.add("small", "table");
+
+	var row = document.createElement("tr");
+        row.classList.add("row");
+
+	if (this.ranking1 != "NR") {
+		var rank1 = document.createElement("td");
+		rank1.className = "ranking";
+		rank1.innerHTML = this.ranking1;
+		var subScr = document.createElement("sub");
+		subScr.appendChild(rank1);
+		row.appendChild(subScr);
+	}
+	var team1 = document.createElement("td");
+	team1.innerHTML = this.team1;
+
+	if (this.score1 > this.score2) {
+        	var score1 = document.createElement("th");
+	} else {
+		var score1 = document.createElement("td");
+	}
+	score1.innerHTML = this.score1;
+
+	var scoreBreak = document.createElement("td");
+	scoreBreak.innerHTML = " : ";
+
+	if (this.score2 > this.score1) {
+                var score2 = document.createElement("th");
         } else {
-            var table = document.createElement("table");
-            table.classList.add("small", "table");
+                var score2 = document.createElement("td");
+        }
+        score2.innerHTML = this.score2;
 
-            table.appendChild(this.createLabelRow());
+	var team2 = document.createElement("td");
+        team2.innerHTML = this.team2;
 
-            for (var i = 0; i < this.scores.length; i++) {
-                this.appendDataRow(this.scores[i].$, table);
-            }
+        var timeLeft = document.createElement("td");
+        timeLeft.innerHTML = " - " + this.time;
 
-            wrapper.appendChild(table);
+	var teamBreak = document.createElement("td");
+	teamBreak.innerHTML = "&nbsp;";
+
+	var teamBreak2 = document.createElement("td");
+        teamBreak2.innerHTML = "&nbsp;";
+
+	row.appendChild(team1);
+	row.appendChild(teamBreak);	
+	row.appendChild(score1);
+	row.appendChild(scoreBreak);
+	row.appendChild(score2);
+	row.appendChild(teamBreak2);
+
+	if (this.ranking2 != "NR") {
+                var rank2 = document.createElement("td");
+		rank2.className = "ranking";
+                rank2.innerHTML = this.ranking2;
+		var subScr = document.createElement("sub");
+                subScr.appendChild(rank2);
+                row.appendChild(subScr);
         }
 
-        return wrapper;
+	row.appendChild(team2);
+	row.appendChild(timeLeft);
+
+
+	table.appendChild(row);
+	wrapper.appendChild(table);
+	return wrapper;
     }
 
 
