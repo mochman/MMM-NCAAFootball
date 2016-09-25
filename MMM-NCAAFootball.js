@@ -6,7 +6,7 @@ Module.register("MMM-NCAAFootball",{
 		initialLoadDelay: 2500, // 2.5 seconds delay. This delay is used to keep the wunderground API happy.
 		retryDelay: 2500,
     animationSpeed: 1000,
-		updateInterval: 30 * 1000
+		updateInterval: 5 * 60 * 1000
 	},
 
    getStyles: function () {
