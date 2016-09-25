@@ -113,10 +113,10 @@ getDom: function () {
   var score1 = document.createElement("td");
 	var score2 = document.createElement("td");
 	if (this.score1 > this.score2) {
-  	score1.className = "bold bright";
+  	score1.className = "bright";
 	}
 	if (this.score2 > this.score1 ){
-		score2.className = "bold bright";
+		score2.className = "bright";
 	}
 	score1.innerHTML = this.score1;
 	score2.innerHTML = this.score2;
