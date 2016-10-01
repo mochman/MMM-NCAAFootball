@@ -62,8 +62,13 @@ Module.register("MMM-NCAAFootball",{
       this.team1 = data.team1;
       this.team2 = data.team2;
       this.time = data.time;
-    }
-
+    } else if (this.title == "upcomming") {
+	this.ranking1 = data.ranking1;
+	this.ranking2 = data.ranking2;
+      	this.team1 = data.team1;
+      	this.team2 = data.team2;
+      	this.time = data.time;
+   }
 	this.loaded = 1;
 	this.updateDom(this.config.animationSpeed);
 
@@ -110,19 +115,24 @@ getDom: function () {
 	var team1 = document.createElement("td");
 	team1.innerHTML = this.team1;
 
-  var score1 = document.createElement("td");
-	var score2 = document.createElement("td");
-	if (this.score1 > this.score2) {
-  	score1.className = "bright";
-	}
-	if (this.score2 > this.score1 ){
-		score2.className = "bright";
-	}
-	score1.innerHTML = this.score1;
-	score2.innerHTML = this.score2;
+	if (this.title == "game") {
+  		var score1 = document.createElement("td");
+		var score2 = document.createElement("td");
+		if (this.score1 > this.score2) {
+  			score1.className = "bright";
+		}
+		if (this.score2 > this.score1 ){
+			score2.className = "bright";
+		}
+		score1.innerHTML = this.score1;
+		score2.innerHTML = this.score2;
 
-	var scoreBreak = document.createElement("td");
-	scoreBreak.innerHTML = " : ";
+		var scoreBreak = document.createElement("td");
+		scoreBreak.innerHTML = " : ";
+	} 
+
+	var atText = document.createElement("td");
+        atText.innerHTML = "at";
 
 	var team2 = document.createElement("td");
         team2.innerHTML = this.team2;
@@ -136,12 +146,19 @@ getDom: function () {
 	var teamBreak2 = document.createElement("td");
         teamBreak2.innerHTML = "&nbsp;";
 
-	row.appendChild(team1);
-	row.appendChild(teamBreak);
-	row.appendChild(score1);
-	row.appendChild(scoreBreak);
-	row.appendChild(score2);
-	row.appendChild(teamBreak2);
+	if (this.title == "game") {
+		row.appendChild(team1);
+		row.appendChild(teamBreak);
+		row.appendChild(score1);
+		row.appendChild(scoreBreak);
+		row.appendChild(score2);
+		row.appendChild(teamBreak2);
+	} else {
+		row.appendChild(team1);
+		row.appendChild(teamBreak);
+                row.appendChild(atText);
+                row.appendChild(teamBreak2);
+	}
 
 	if (this.ranking2 != "NR") {
                 var rank2 = document.createElement("td");
