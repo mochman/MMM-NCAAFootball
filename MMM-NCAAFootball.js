@@ -5,8 +5,8 @@ Module.register("MMM-NCAAFootball",{
 		url: "",
 		initialLoadDelay: 2500, // 2.5 seconds delay. This delay is used to keep the wunderground API happy.
 		retryDelay: 2500,
-    animationSpeed: 1000,
-		updateInterval: 5 * 60 * 1000
+    		animationSpeed: 1000,
+		updateInterval: 10 * 1000
 	},
 
    getStyles: function () {
@@ -29,27 +29,27 @@ Module.register("MMM-NCAAFootball",{
   },
 
   getScores: function() {
-  		var url = this.config.url;
-  		var self = this;
+  	var url = this.config.url;
+  	var self = this;
+  	var scoreRequest = new XMLHttpRequest();
 
-  		var scoreRequest = new XMLHttpRequest();
+  	scoreRequest.open("GET", url, true);
 
-  		scoreRequest.open("GET", url, true);
-
-  		scoreRequest.onreadystatechange = function() {
-  			if (scoreRequest.readyState === 4) {
-  				if (scoreRequest.status === 200) {
-  					self.processScores(JSON.parse(scoreRequest.response));
-  				} else if (scoreRequest.status === 0 ) {
-  					Log.error(self.name + ": Could not get valid JSON data");
-            self.updateDom(self.config.animationSpeed);
-  				} else {
-  					Log.error(self.name + ": Some problem with getting Data.");
-  					self.updateDom(self.config.animationSpeed);
-  				}
+  	scoreRequest.onreadystatechange = function() {
+  		if (scoreRequest.readyState === 4) {
+  			if (scoreRequest.status === 200) {
+  				self.processScores(JSON.parse(scoreRequest.response));
+  			} else if (scoreRequest.status === 0 ) {
+  				Log.error(self.name + ": Could not get valid JSON data");
+           			self.updateDom(self.config.animationSpeed);
+  			} else {
+  				Log.error(self.name + ": Some problem with getting Data.");
+  				self.updateDom(self.config.animationSpeed);
   			}
-  		};
-  		scoreRequest.send();
+  		}
+  	};
+  	scoreRequest.send();
+	this.scheduleUpdate();
   },
 
   processScores: function(data) {
@@ -89,7 +89,6 @@ scheduleUpdate: function(delay) {
 
 
 getDom: function () {
-
         var wrapper = document.createElement("div");
 
 	if (!this.loaded) {
