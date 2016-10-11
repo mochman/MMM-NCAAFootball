@@ -54,18 +54,17 @@ Module.register("MMM-NCAAFootball",{
 
   processScores: function(data) {
     this.title = data.title;
+    this.team1 = data.team1;
     if (this.title == "game") {
       this.ranking1 = data.ranking1;
       this.ranking2 = data.ranking2;
       this.score1 = data.score1;
       this.score2 = data.score2;
-      this.team1 = data.team1;
       this.team2 = data.team2;
       this.time = data.time;
     } else if (this.title == "upcomming") {
 	this.ranking1 = data.ranking1;
 	this.ranking2 = data.ranking2;
-      	this.team1 = data.team1;
       	this.team2 = data.team2;
       	this.time = data.time;
    }
@@ -102,6 +101,15 @@ getDom: function () {
 
 	var row = document.createElement("tr");
         row.classList.add("row");
+
+	if (this.title == "Bye Week") {
+		var byeWeek = document.createElement("td");
+		byeWeek.innerHTML = this.team1 + " - Bye Week";
+		row.appendChild(byeWeek);
+		table.appendChild(row);
+        	wrapper.appendChild(table);
+        	return wrapper;
+	}
 
 	if (this.ranking1 != "NR") {
 		var rank1 = document.createElement("td");
